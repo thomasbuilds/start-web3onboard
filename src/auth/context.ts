@@ -4,7 +4,7 @@ import type { Session } from "~/auth/server";
 import type { Web3 } from "~/web3";
 
 interface Context {
-  session: AccessorWithLatest<Session | undefined>;
+  session: AccessorWithLatest<Partial<Session> | undefined>;
   signedIn: () => boolean;
   logout: () => Promise<never>;
   web3: Resource<Web3>;
