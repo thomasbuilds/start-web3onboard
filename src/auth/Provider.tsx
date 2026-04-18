@@ -11,6 +11,8 @@ import { sign, authWalletAction, addWalletAction } from "~/auth/web3";
 import useWeb3Onboard, { load } from "~/web3";
 import Context from "./context";
 
+const SUPPORTED_CHAINS = [{ id: "0x1" }, { id: "0x2105" }];
+
 export default function AuthProvider(props: ParentProps) {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +28,7 @@ export default function AuthProvider(props: ParentProps) {
   const onboard = useWeb3Onboard({
     wallets: [injectedWallets()],
     connect: { autoConnectLastWallet: true },
-    chains: [{ id: "0x1" }, { id: "0x2105" }],
+    chains: SUPPORTED_CHAINS,
     appMetadata: {
       name: "SolidStart",
       description: "Web3-onboard template",
@@ -43,6 +45,10 @@ export default function AuthProvider(props: ParentProps) {
         const address = await sign(wallet.provider);
         const r = searchParams.redirect;
         await authWallet(address, Array.isArray(r) ? r[0] : r);
+        const chainId = wallet.chains[0].id;
+        const supported = SUPPORTED_CHAINS.map((c) => c.id);
+        if (chainId && !supported.includes(chainId))
+          await onboard.setChain({ chainId: supported[0] });
       } catch (err) {
         setSearchParams({
           error: err instanceof Error ? err.message : "",
