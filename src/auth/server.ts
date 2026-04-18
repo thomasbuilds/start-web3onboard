@@ -1,5 +1,5 @@
 import { redirect } from "@solidjs/router";
-import { useSession } from "vinxi/http";
+import { useSession } from "@solidjs/start/http";
 
 export interface Session {
   id: number | undefined;
@@ -7,7 +7,11 @@ export interface Session {
 }
 
 export const getSession = () =>
-  useSession<Session>({ password: process.env.SESSION_SECRET });
+  useSession<Session>({
+    password:
+      process.env.SESSION_SECRET ??
+      "change-me-to-a-secure-random-value-in-env-file"
+  });
 
 export const updateSession = async (wallets: string[], id?: number) => {
   const session = await getSession();
